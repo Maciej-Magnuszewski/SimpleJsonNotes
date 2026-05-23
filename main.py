@@ -11,13 +11,35 @@ def note(new_id, title, body):
     return x
 
 
+# Split off logic, delete will later utilise its own version to output only id + title.
+def checkNotes():
+    file_path = Path("notes.json")
+
+    if file_path.exists():
+        try:
+            with open("notes.json", "r") as file:
+                data = json.load(file)
+                return data
+        except json.JSONDecodeError:
+            print("Note format incorrect")
+            return
+    else:
+        print("Note file missing, please add notes first.")
+        return
+
+
 def previewNotes():
-    with open("notes.json", "r") as file:
-        data = json.load(file)
+    data = checkNotes()
+
+    if not data:
+        return
 
     for item in data:
         print(json.dumps(item, indent=4))
 
+def deleteNote():
+    print("Please enter id of note below")
+    previewNotes()
 
 def newNote():
     title = input("Please add note title: \n")
@@ -57,7 +79,8 @@ print("Testing Notes Management")
 print("-----------------------")
 
 while True:
-    user_input = input("Do you wish to: \n Preview notes: (1) \n Add a new note: (2) \n Quit? (Q) \n").lower()
+    user_input = input("Do you wish to: \n Preview notes: (1) \n Add a new note: (2)"
+                       " \n Delete a note: (3) \n Quit? (Q) \n").lower()
 
     match user_input:
 
@@ -66,6 +89,9 @@ while True:
 
         case "2":
             newNote()
+
+        case "3":
+            deleteNote()
 
         case "q":
             break
