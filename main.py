@@ -2,8 +2,9 @@ import json
 from pathlib import Path
 
 
-def note(title, body):
+def note(new_id, title, body):
     x = {
+        "id": new_id,
         "title": title,
         "task": body
     }
@@ -22,16 +23,29 @@ def newNote():
     title = input("Please add note title: \n")
     body = input("Please insert note's body: \n")
 
-    x = note(title, body)
-
     file_path = Path("notes.json")
 
+    # preloads notes to later append new notes to.
+    # if note doesn't exist or is formatted incorrectly creates blank
     if file_path.exists():
-        with open("notes.json", "r") as f:
-            notes = json.load(f)
+        try:
+            with open("notes.json", "r") as f:
+                notes = json.load(f)
+        except json.JSONDecodeError:
+            notes = []
 
     else:
         notes = []
+
+    # Checks notes for all id's, assigns id based on final note
+    # Most likely goes by highest, likely doesn't fill blanks
+    if notes:
+        last_id = max(note["id"] for note in notes)
+        new_id = last_id + 1
+    else:
+        new_id = 1
+
+    x = note(new_id, title, body)
 
     notes.append(x)
 
